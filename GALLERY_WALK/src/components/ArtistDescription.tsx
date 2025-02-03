@@ -1,6 +1,6 @@
 import { fetchHandler, basicFetchOptions } from "../utils/fetchData";
 import { TOKEN } from "../configs";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 const API_BASE_URL = 'https://api.artsy.net/api/artists'
 const ARTIST_SLUG = 'andy-warhol'
@@ -22,7 +22,7 @@ export default function ArtistDescription() {
 
 
   const [artistData, setArtistData] = useState<ArtistData | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [_error, setError] = useState<string | null>(null)
   // const [loading, setLoading] = useState<boolean>(false)
 
 
@@ -43,7 +43,7 @@ export default function ArtistDescription() {
         if (fetchError) {
           setError(fetchError.message)
         } else {
-          setArtistData(responseData)
+          setArtistData(responseData as ArtistData)
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error')
