@@ -5,9 +5,9 @@ import { TOKEN } from "../configs";
 interface ArtWork {
   title: string;
   date: string;
-  slug: string;
+  category: string;
   _links: {
-    thumbnail: {
+    thumbnail?: {
       href: string;
     };
   };
@@ -19,27 +19,28 @@ interface ArtWorksResponse {
   total_count: number;
 }
 
-const API_ARTWORK_URL = import.meta.env.VITE_API_ARTWORK_URL; // Use the pagination API endpoint
+const API_ARTWORK_URL = import.meta.env.VITE_API_ARTWORK_URL;
 
 export default function GalleryImages() {
   const [artWorks, setArtWorks] = useState<ArtWork[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0);
-  const [nxtCursor, setNxtCursor] = useState<string | null>(null); // Pagination cursor
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [nxtCursor, setNxtCursor] = useState<string | null>(null);
   const observerRef = useRef<HTMLDivElement | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // const [expand, setExpand] = useState<boolean>(false);
 
-  // Fetch artworks with pagination support
   const fetchArtworks = async (cursor: string | null = null) => {
     try {
       const url = cursor
-        ? `${API_ARTWORK_URL}?cursor=${cursor}&size=100&total_count=1`
-        : `${API_ARTWORK_URL}?size=100&total_count=1`;
+        ? `${API_ARTWORK_URL}?cursor=${cursor}&size=200&total_count=1`
+        : `${API_ARTWORK_URL}?size=200&total_count=1`;
 
       const options: RequestInit = {
         ...basicFetchOptions,
         headers: {
           ...basicFetchOptions.headers,
-          "X-xapp-Token": TOKEN,
+          "X-XAPP-Token": TOKEN,
         },
       };
 
@@ -47,29 +48,35 @@ export default function GalleryImages() {
 
       if (fetchError) {
         setError(fetchError.message);
-      } else if (responseData) {
-        setTotalCount(responseData.total_count || 0); // Total count of artworks
-        setArtWorks((prev) =>
-          cursor ? [...prev, ...responseData._embedded.artworks] : responseData._embedded.artworks
+        return;
+      }
+
+      if (responseData) {
+        const fetchedArtworks = responseData._embedded.artworks;
+        const fetchedCategories = Array.from(
+          new Set(fetchedArtworks.map((artwork) => artwork.category))
         );
-        setNxtCursor(responseData.next); // Update the pagination cursor
+
+        setCategories((prev) => Array.from(new Set([...prev, ...fetchedCategories])));
+        setArtWorks((prev) =>
+          cursor ? [...prev, ...fetchedArtworks] : fetchedArtworks
+        );
+        setNxtCursor(responseData.next);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     }
   };
 
-  // Initial fetch when the component loads
   useEffect(() => {
     fetchArtworks(null);
   }, []);
 
-  // Handle infinite scrolling using IntersectionObserver
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && nxtCursor) {
-          fetchArtworks(nxtCursor); // Fetch next page when the observer is triggered
+          fetchArtworks(nxtCursor);
         }
       },
       { threshold: 1.0 }
@@ -85,32 +92,60 @@ export default function GalleryImages() {
     };
   }, [nxtCursor]);
 
+  const filteredArtWorks = selectedCategory
+    ? artWorks.filter((artwork) => artwork.category === selectedCategory)
+    : artWorks;
+
+  // const toggleExpand = () => {
+  //   setExpand(!expand)
+  // }
+
   return (
     <div>
       <h1>ArtWork Display</h1>
       {error && <p style={{ color: "red" }}>Error: {error}</p>}
-      {artWorks.length > 0 ? (
+
+      {/* Category Filter Dropdown */}
+      <div>
+        <label htmlFor="category-select">Filter by Category: </label>
+        <select
+          id="category-select"
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+        >
+          <option value="">All Categories</option>
+          {categories.map((category, idx) => (
+            <option key={idx} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {filteredArtWorks.length > 0 ? (
         <div>
           <ul>
-            {artWorks.map((artwork, idx) => (
+            {filteredArtWorks.map((artwork, idx) => (
               <li key={idx}>
-                <h3>{artwork.title}</h3>
-                <p>{artwork.date}</p>
-                {artwork._links.thumbnail.href ? (
-                  <img src={artwork._links.thumbnail.href} alt="art" />
+                {/* <h3>{artwork.title}</h3>
+                <p>{artwork.date}</p> */}
+                {artwork._links.thumbnail?.href ? (
+                  <img
+                    src={artwork._links.thumbnail.href}
+                    alt={`Artwork titled ${artwork.title}`}
+                  />
                 ) : (
-                  <p>No image</p>
+                  <p>No image available</p>
                 )}
               </li>
             ))}
           </ul>
-          {/* Invisible div used for infinite scrolling */}
+
           <div ref={observerRef} style={{ height: "1px" }}></div>
         </div>
       ) : (
         <p>No artworks available</p>
       )}
-      <p>Total Artworks: {totalCount}</p> {/* Display the total count */}
     </div>
   );
 }
