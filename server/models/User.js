@@ -9,12 +9,13 @@ class User {
   // static methods to hide the hashed password of users before sending user data 
   // to the client. Since we want to keep the #passwordHash property private, we 
   // provide the isValidPassword instance method as a way to indirectly access it.
-  constructor({ id, username, password_hash, bio, profile_pic }) {
+  constructor({ id, username, password_hash, bio, profile_pic, liked_pictures }) {
     this.id = id;
     this.username = username;
     this.#passwordHash = password_hash;
     this.bio = bio;
     this.profile_pic = profile_pic;
+    this.liked_pictures = liked_pictures || [];
   }
 
   // This instance method takes in a plain-text password and returns true if it matches
@@ -89,22 +90,23 @@ class User {
     return knex('users').del()
   }
 
-  static async likePicture(userId, picture) {
+  static async likePicture(userId, imageUrl) {
     const query = `
       UPDATE users
-      SET liked_pictures = ARRAY_APPENDED(liked_pictures, ?)
+      SET liked_pictures = ARRAY_APPEND(liked_pictures, ?)
       WHERE id = ?
       RETURNING *
     `;
-    const result = await knex.raw(query, [picture, userId])
-    return result.rows[0] ? new User(result.rows[0]) : null
+    const result = await knex.raw(query, [imageUrl, userId]);
+    return result.rows[0] ? new User(result.rows[0]) : null;
   }
 
   static async getLikedPictures(userId) {
     const query = `SELECT liked_pictures FROM users WHERE id = ?`;
-    const result = await knew.raw(query, [userId])
-    return result.rows[0] ? result.rows[0].liked_pictures : []
+    const result = await knex.raw(query, [userId]);
+    return result.rows[0] ? result.rows[0].liked_pictures : [];
   }
+
 }
 
 module.exports = User;

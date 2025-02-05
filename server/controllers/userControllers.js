@@ -35,3 +35,33 @@ exports.updateUser = async (req, res) => {
   if (!updateUser) return res.sendStatus(404)
   res.send(updateUser)
 }
+
+exports.userLikePic = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { imageUrl } = req.body;
+
+    if (!imageUrl) {
+      return res.status(400).json({ message: "Image URL is required" });
+    }
+
+    const updatedUser = await User.likePicture(id, imageUrl);
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Picture liked successfully", liked_pictures: updatedUser.liked_pictures });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+exports.userGetPic = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const likedPictures = await User.getLikedPictures(id);
+    res.json({ liked_pictures: likedPictures });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}

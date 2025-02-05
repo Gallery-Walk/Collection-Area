@@ -10,13 +10,21 @@ const handleCookies = require('./middleware/handleCookies');
 //controller imports
 const authControllers = require('./controllers/authControllers')
 const userControllers = require('./controllers/userControllers');
+const authenticate = require("./middleware/auth");
 const app = express()
 
 //middleware
+
+
+app.use(express.json())
 app.use(handleCookies);
 app.use(logRoutes)
-app.use(express.json())
-app.use(express.static(path.join(__dirname, '../GALLERY_WALK/dist')))
+
+
+app.use((req, res, next) => {
+  console.log("Session Data:", req.session);
+  next();
+});
 
 //auth routes
 app.get('/api/me', authControllers.showMe)
@@ -25,9 +33,15 @@ app.delete('/api/logout', authControllers.logoutUser)
 
 
 //user routes
-app.post('/api/users', authentication, userControllers.listUsers);
+app.post('/api/users', userControllers.createUser);
+app.post('/api/users/:id/like-picture', authentication, userControllers.userLikePic)
+app.get('/api/users/:id/liked-pictures', authentication, userControllers.userGetPic)
+app.get('/api/users', authentication, userControllers.listUsers);
 app.get('/api/users/:id', authentication, userControllers.showUser)
 app.patch('/api/user/:id/edit', authentication, userControllers.updateUser)
+
+
+app.use(express.static(path.join(__dirname, '../GALLERY_WALK/dist')))
 
 //fallback fallback (route)
 app.get('*', (req, res, next) => {
