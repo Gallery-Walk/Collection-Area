@@ -17,7 +17,7 @@ export default function GalleryPage() {
   }
 
   return (
-    <div className="container">
+    <div className="\">
       <form onSubmit={handleSearch}>
         <input
           type="text"

@@ -1,6 +1,7 @@
-import { useEffect, useState, useRef } from "react";
-import { basicFetchOptions, fetchHandler } from "../utils/fetchData";
+import { useEffect, useState, useRef, useContext } from "react";
+import { basicFetchOptions, fetchHandler, getPostOptions } from "../utils/fetchData";
 import { TOKEN } from "../configs";
+import { CurrentUserContext } from "../contexts/currentUser-context-provider";
 
 interface ArtWork {
   title: string;
@@ -28,7 +29,9 @@ export default function GalleryImages() {
   const [nxtCursor, setNxtCursor] = useState<string | null>(null);
   const observerRef = useRef<HTMLDivElement | null>(null);
   const [error, setError] = useState<string | null>(null);
-  // const [expand, setExpand] = useState<boolean>(false);
+  const [expandArt, setExpandArt] = useState<ArtWork | null>(null);
+  const [saved, setSaved] = useState<string[]>([])
+  const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
 
   const fetchArtworks = async (cursor: string | null = null) => {
     try {
@@ -96,9 +99,30 @@ export default function GalleryImages() {
     ? artWorks.filter((artwork) => artwork.category === selectedCategory)
     : artWorks;
 
-  // const toggleExpand = () => {
-  //   setExpand(!expand)
-  // }
+  const handleSaved = async (artworkUrl: string) => {
+    if (!currentUser?.id) {
+      console.error("User not logged in");
+      return;
+    }
+
+    try {
+      const apiUrl = `/api/users/${currentUser.id}/like-picture`;
+
+      const [data, error] = await fetchHandler(apiUrl, getPostOptions({ imageUrl: artworkUrl }));
+
+      if (error) {
+        console.error("Error saving artwork:", error);
+        return;
+      }
+
+      if (data) {
+        setSaved((prevSaved) => [...prevSaved, artworkUrl]); // ✅ Works now
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+    }
+  };
+
 
   return (
     <div>
@@ -133,6 +157,8 @@ export default function GalleryImages() {
                   <img
                     src={artwork._links.thumbnail.href}
                     alt={`Artwork titled ${artwork.title}`}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setExpandArt(artwork)}
                   />
                 ) : (
                   <p>No image available</p>
@@ -145,6 +171,26 @@ export default function GalleryImages() {
         </div>
       ) : (
         <p>No artworks available</p>
+      )}
+      {expandArt && (
+        <div className="artwork_modal_overlay" onClick={() => setExpandArt(null)}>
+          <div className="artwork_modal_content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal_img_container">
+              <img
+                src={expandArt._links.thumbnail?.href}
+                alt={`Artwork titled ${expandArt.title}`}
+                className="artwork_modal_img"
+              />
+            </div>
+            <div className="modal_artInfo_container">
+              <h2 className="artwork_modal_title">{expandArt.title}</h2>
+              <p className="artwork_modal_text">
+                {expandArt.date || "No date available."}
+              </p>
+              <button className="" onClick={() => handleSaved(expandArt._links.thumbnail?.href ?? "")}>save</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

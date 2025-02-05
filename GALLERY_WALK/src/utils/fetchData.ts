@@ -30,14 +30,18 @@ export const fetchHandler = async <T = unknown>(
   options: RequestInit = {}
 ): Promise<FetchResponse<T>> => {
   try {
-    const response = await fetch(url, options);
+    const response = await fetch(url, {
+      ...options,
+      credentials: "include",
+    });
+
     const { ok, status, headers } = response;
 
     if (!ok) {
       throw new Error(`Fetch failed with status - ${status}`);
     }
 
-    const isJson = (headers.get('content-type') || '').includes('application/json');
+    const isJson = (headers.get("content-type") || "").includes("application/json");
     const responseData = await (isJson ? response.json() : response.text());
 
     return [responseData as T, null];
