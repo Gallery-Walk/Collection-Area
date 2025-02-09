@@ -90,23 +90,98 @@ class User {
     return knex('users').del()
   }
 
-  static async likePicture(userId, imageUrl) {
+  static async likePicture(id, imageUrl) {
     const query = `
       UPDATE users
-      SET liked_pictures = ARRAY_APPEND(liked_pictures, ?)
+      SET liked_pictures = ARRAY_APPEND(COALESCE(liked_pictures, '{}'), ?)
       WHERE id = ?
       RETURNING *
     `;
-    const result = await knex.raw(query, [imageUrl, userId]);
-    return result.rows[0] ? new User(result.rows[0]) : null;
+
+    try {
+      const result = await knex.raw(query, [imageUrl, id]);
+
+      // console.log('Raw Result from DB:', result);  // Log the raw result to inspect the structure
+
+      if (result.rows && result.rows[0]) {
+        return result.rows[0];  // Return the updated user object
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('Database error in likePicture:', error);
+      throw error;  // Pass the error to the controller
+    }
   }
 
-  static async getLikedPictures(userId) {
+
+  static async getLikedPictures(id) {
     const query = `SELECT liked_pictures FROM users WHERE id = ?`;
-    const result = await knex.raw(query, [userId]);
+    const result = await knex.raw(query, [id]);
     return result.rows[0] ? result.rows[0].liked_pictures : [];
   }
 
+  static async deleteLikedPicture(id, imageUrl) {
+    console.log('Attempting to remove image URL:', imageUrl, 'for user ID:', id);
+
+    const query = `
+      UPDATE users
+      SET liked_pictures = ARRAY_REMOVE(liked_pictures, ?)
+      WHERE id = ?
+      RETURNING *
+    `
+
+    try {
+      const result = await knex.raw(query, [imageUrl, id]);
+      // console.log('Database raw result:', result);  // Log the full result object
+
+      // Check if result.rows exists or if the structure is different
+      if (result.rows && result.rows[0]) {
+        return new User(result.rows[0]);
+      } else {
+        console.warn('No rows returned or result structure is different:', result);
+        return null;
+      }
+    } catch (error) {
+      console.error('Database query failed:', error.message);
+      throw error;
+    }
+  }
+
+  // static async moveAllLikedPictures(id) {
+  //   const query = `
+  //     UPDATE users
+  //     SET moved_pictures = COALESCE(moved_pictures, '{}') || liked_pictures,
+  //       liked_pictures = '{}'
+  //     WHERE id = ?
+  //     RETURNING *;
+  //   `;
+
+  //   const result = await knex.raw(query, [id])
+  //   const updateUser = result.rows[0];
+  //   return updateUser ? new User(UpdatedUser) : null
+  // }
+
+  // static async getMovedPictures(id) {
+  //   const query = `SELECT moved_pictures FROM users WHERE id = ?`;
+
+  //   const result = await knex.raw(query, [id])
+  //   return result.rows[0]?.moved_pictures || []
+  // }
+
+  // static async moveBackToLikedPictures(id, imageUrl) {
+  //   const query = `
+  //   UPDATE users
+  //   SET moved_pictures = ARRAY_REMOVE(moved_pictures, ?),
+  //       liked_pictures = ARRAY_APPEND(liked_pictures, ?)
+  //   WHERE id = ?
+  //   RETURNING *;
+  // `;
+
+  //   const result = await knex.raw(query, [imageUrl, imageUrl, id])
+  //   const updateUser = result.rows[0];
+  //   return updateUser ? new User(updateUser) : null
+  // }
 }
 
 module.exports = User;

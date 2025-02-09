@@ -10,6 +10,7 @@ const handleCookies = require('./middleware/handleCookies');
 //controller imports
 const authControllers = require('./controllers/authControllers')
 const userControllers = require('./controllers/userControllers');
+const galleryWalkControllers = require('./controllers/galleryWalkControllers')
 const authenticate = require("./middleware/auth");
 const app = express()
 
@@ -39,7 +40,18 @@ app.get('/api/users/:id/liked-pictures', authentication, userControllers.userGet
 app.get('/api/users', authentication, userControllers.listUsers);
 app.get('/api/users/:id', authentication, userControllers.showUser)
 app.patch('/api/user/:id/edit', authentication, userControllers.updateUser)
+app.delete('/api/users/:id/liked-pictures', authentication, userControllers.deleteLikedPicture)
 
+//getting all pictures from user to go to "walk" 
+app.post('/api/publish', galleryWalkControllers.publishGalleryWalk)
+app.get('/api/images', galleryWalkControllers.getAllImages)
+app.delete('/api/delete/:id', galleryWalkControllers.deleteGalleryWalk)
+
+// app.post('/api/users/:id/move-liked-pictures', authentication, userControllers.moveAllLikedPictures)
+// app.get('/api/users/:id/moved-pictures', authentication, userControllers.getMovedPictures)
+// app.post('/api/users/:id/move-back-picture', authentication, userControllers.moveBackToLikedPictures)
+
+// console.log(userControllers)
 
 app.use(express.static(path.join(__dirname, '../GALLERY_WALK/dist')))
 

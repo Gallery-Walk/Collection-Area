@@ -52,9 +52,10 @@ exports.userLikePic = async (req, res) => {
 
     res.json({ message: "Picture liked successfully", liked_pictures: updatedUser.liked_pictures });
   } catch (error) {
+    console.error('Error in userLikePic controller:', error);  // Log the full error
     res.status(500).json({ message: error.message });
   }
-}
+};
 
 exports.userGetPic = async (req, res) => {
   try {
@@ -65,3 +66,74 @@ exports.userGetPic = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 }
+
+exports.deleteLikedPicture = async (req, res) => {
+  const { id } = req.params;
+  const { imageUrl } = req.body;
+
+  // console.log('Received delete request for user ID:', id);
+  // console.log('Received image URL:', imageUrl);
+
+  if (!imageUrl) {
+    console.error('No image URL provided in the request body.');
+    return res.status(400).json({ message: 'Image URL is required.' });
+  }
+
+  try {
+    const updatedUser = await User.deleteLikedPicture(id, imageUrl);
+    // console.log('Updated user after deletion:', updatedUser);
+
+    if (updatedUser) {
+      // Return only the fields needed for the frontend
+      const { id, username, liked_pictures } = updatedUser;
+
+      res.status(200).json({
+        message: 'Picture removed from likes successfully!',
+        user: { id, username, liked_pictures }
+      });
+    } else {
+      res.status(404).json({ message: 'Liked picture not found.' });
+    }
+  } catch (error) {
+    console.error('Error removing liked picture:', error.message);
+    console.error('Stack Trace:', error.stack);
+    res.status(500).json({ message: 'Internal server error.', error: error.message });
+  }
+};
+
+// exports.moveBackToLikedPictures = async (req, res) => {
+//   const { id } = req.params
+//   const { imageUrl } = req.body
+
+//   const updatedUser = await User.moveBackToLikedPictures(id, imageUrl);
+//   if (updatedUser) {
+//     res.status(200).json({
+//       message: 'Image moved back to liked pictures',
+//       liked_Pictures: updatedUser.liked_pictures,
+//       moved_Pictures: updatedUser.moved_pictures
+//     })
+//   } else {
+//     res.status(404).json({ message: 'Image not found in moved pictures' })
+//   }
+// }
+
+// exports.getMovedPictures = async (req, res) => {
+//   const { id } = req.params;
+
+//   const movedPictures = await User.getMovedPictures(id)
+//   res.status(200).json({ moved_pictures: movedPictures })
+// }
+
+// exports.moveAllLikedPictures = async (req, res) => {
+//   const { id } = req.params
+
+//   const updateUser = await User.moveAllLikedPictures(id)
+//   if (updateUser) {
+//     res.status(200).json({
+//       message: "All liked pictures moved",
+//       moved_pictures: updateUser.moved_pictures
+//     })
+//   } else {
+//     res.status(404).json({ message: 'User not found.' })
+//   }
+// }

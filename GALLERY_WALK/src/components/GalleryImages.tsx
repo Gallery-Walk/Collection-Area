@@ -30,44 +30,40 @@ export default function GalleryImages() {
   const observerRef = useRef<HTMLDivElement | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [expandArt, setExpandArt] = useState<ArtWork | null>(null);
-  const [saved, setSaved] = useState<string[]>([])
-  const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
+  const [_saved, setSaved] = useState<string[]>([])
+  const { currentUser } = useContext(CurrentUserContext);
 
   const fetchArtworks = async (cursor: string | null = null) => {
-    try {
-      const url = cursor
-        ? `${API_ARTWORK_URL}?cursor=${cursor}&size=200&total_count=1`
-        : `${API_ARTWORK_URL}?size=200&total_count=1`;
+    const url = cursor
+      ? `${API_ARTWORK_URL}?cursor=${cursor}&size=200&total_count=1`
+      : `${API_ARTWORK_URL}?size=200&total_count=1`;
 
-      const options: RequestInit = {
-        ...basicFetchOptions,
-        headers: {
-          ...basicFetchOptions.headers,
-          "X-XAPP-Token": TOKEN,
-        },
-      };
+    const options: RequestInit = {
+      ...basicFetchOptions,
+      headers: {
+        ...basicFetchOptions.headers,
+        "X-XAPP-Token": TOKEN,
+      },
+    };
 
-      const [responseData, fetchError] = await fetchHandler<ArtWorksResponse>(url, options);
+    const [responseData, fetchError] = await fetchHandler<ArtWorksResponse>(url, options);
 
-      if (fetchError) {
-        setError(fetchError.message);
-        return;
-      }
+    if (fetchError) {
+      setError(fetchError.message);
+      return;
+    }
 
-      if (responseData) {
-        const fetchedArtworks = responseData._embedded.artworks;
-        const fetchedCategories = Array.from(
-          new Set(fetchedArtworks.map((artwork) => artwork.category))
-        );
+    if (responseData) {
+      const fetchedArtworks = responseData._embedded.artworks;
+      const fetchedCategories = Array.from(
+        new Set(fetchedArtworks.map((artwork) => artwork.category))
+      );
 
-        setCategories((prev) => Array.from(new Set([...prev, ...fetchedCategories])));
-        setArtWorks((prev) =>
-          cursor ? [...prev, ...fetchedArtworks] : fetchedArtworks
-        );
-        setNxtCursor(responseData.next);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
+      setCategories((prev) => Array.from(new Set([...prev, ...fetchedCategories])));
+      setArtWorks((prev) =>
+        cursor ? [...prev, ...fetchedArtworks] : fetchedArtworks
+      );
+      setNxtCursor(responseData.next);
     }
   };
 
@@ -104,23 +100,15 @@ export default function GalleryImages() {
       console.error("User not logged in");
       return;
     }
+    const apiUrl = `/api/users/${currentUser.id}/like-picture`;
+    const [data, error] = await fetchHandler(apiUrl, getPostOptions({ imageUrl: artworkUrl }));
 
-    try {
-      const apiUrl = `/api/users/${currentUser.id}/like-picture`;
-
-      const [data, error] = await fetchHandler(apiUrl, getPostOptions({ imageUrl: artworkUrl }));
-
-      if (error) {
-        console.error("Error saving artwork:", error);
-        return;
-      }
-
-      if (data) {
-        setSaved((prevSaved) => [...prevSaved, artworkUrl]); // ✅ Works now
-      }
-    } catch (err) {
-      console.error("Unexpected error:", err);
+    if (error) {
+      console.error("Error saving artwork:", error);
+      return;
     }
+
+    if (data) setSaved((prevSaved) => [...prevSaved, artworkUrl]); // ✅ Works now
   };
 
 
