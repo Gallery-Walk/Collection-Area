@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { CurrentUserContext } from "../contexts/currentUser-context-provider";
 
 export default function NavBar() {
-  const { currentUser } = useContext(CurrentUserContext) || {}; // ✅ Prevents destructuring errors
+  const { currentUser } = useContext(CurrentUserContext) || {};
 
   return (
     <header>

@@ -27,42 +27,41 @@ export default function LoginPage() {
     navigate(`/users/${user.id}`);
   }
 
-  return <div>
-    <div className="container">
-      <section className="signup_section">
-        <div className="signup_header">
-          {/* <h1 className=""></h1> */}
-        </div>
+  return <div className="main_container">
+    <section className="signup_section">
+      <div className="signup_header">
+        {/* <h1 className=""></h1> */}
+      </div>
 
-        <div>
-          <form action="" className="signup_form" onSubmit={handleSubmit}>
-            <h1 className="" id="create-heading">Log back in</h1>
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              autoComplete="username"
-              name="username"
-              id="username"
-            />
+      <div>
+        <form action="" className="signup_form" onSubmit={handleSubmit}>
+          <h1 className="" id="create-heading">Log back in</h1>
+          <label htmlFor="username">Username</label>
+          <input
+            type="text"
+            autoComplete="username"
+            name="username"
+            id="username"
+          />
 
-            <label htmlFor="password">Password</label>
-            <input
-              autoComplete="current-password"
-              type="password"
-              name="password"
-              id="password"
-            />
+          <label htmlFor="password">Password</label>
+          <input
+            autoComplete="current-password"
+            type="password"
+            name="password"
+            id="password"
+          />
 
-            <div className="m">
-              <button className="button">
-                Login!
-              </button>
-            </div>
+          <div className="m">
+            <button className="button">
+              Login!
+            </button>
+          </div>
 
-          </form>
-          {!!errorText && <p>{errorText}</p>}
-        </div>
-      </section>
-    </div>
+        </form>
+        {!!errorText && <p>{errorText}</p>}
+      </div>
+    </section>
   </div>
+
 }

@@ -36,12 +36,13 @@ export default function DisplayUser() {
   };
 
   return (
-    <>
+    <div>
+      <h1>{currentUser.username}</h1>
       {!!isCurrentUserProfile && (
         <button className="button" onClick={handleLogOut}>
           Logout
         </button>
       )}
-    </>
+    </div>
   );
 }

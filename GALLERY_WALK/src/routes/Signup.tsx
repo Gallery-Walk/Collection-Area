@@ -38,48 +38,46 @@ export default function SignUpPage() {
     if (name === 'password') setPassword(value);
   };
 
-  return <div>
-    <div className="container">
-      <section className="signup_section">
-        <div className="signup_header">
-          <h1 className="">Sign-up!</h1>
-        </div>
+  return <div className="main_container">
+    <section className="signup_section">
+      <div className="signup_header">
+        <h1 className="">Sign-up!</h1>
+      </div>
 
-        <div>
-          <form action="" className="signup_form" onSubmit={handleSubmit} onChange={handleChange}>
-            <h1 className="" id="create-heading">Create New User</h1>
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              autoComplete="off"
-              name="username"
-              onChange={handleChange}
-              value={username}
-            />
+      <div>
+        <form action="" className="signup_form" onSubmit={handleSubmit} onChange={handleChange}>
+          <h1 className="" id="create-heading">Create New User</h1>
+          <label htmlFor="username">Username</label>
+          <input
+            type="text"
+            autoComplete="off"
+            name="username"
+            onChange={handleChange}
+            value={username}
+          />
 
-            <label htmlFor="password">Password</label>
-            <input
-              autoComplete="off"
-              type="password"
-              name="password"
-              id="password"
-              onChange={handleChange}
-              value={password}
-            />
+          <label htmlFor="password">Password</label>
+          <input
+            autoComplete="off"
+            type="password"
+            name="password"
+            id="password"
+            onChange={handleChange}
+            value={password}
+          />
 
-            <div className="m">
-              <button className="button">
-                Sign-up!
-              </button>
-            </div>
+          <div className="m">
+            <button className="button">
+              Sign-up!
+            </button>
+          </div>
 
-          </form>
-          {!!errorText && <p>{errorText}</p>}
-        </div>
-        <div className="already_container">
-          <p className="body">Already have an account with us? <Link className="body" to="/login">Log in!</Link></p>
-        </div>
-      </section>
-    </div>
+        </form>
+        {!!errorText && <p>{errorText}</p>}
+      </div>
+      <div className="already_container">
+        <p className="body">Already have an account with us? <Link className="body" to="/login">Log in!</Link></p>
+      </div>
+    </section>
   </div>
 }
