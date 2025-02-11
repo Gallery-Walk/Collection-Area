@@ -21,7 +21,7 @@ export default function LoginPage() {
     setErrorText('');
     const formData = new FormData(e.target);
     const [user, error] = await logUserIn(Object.fromEntries(formData));
-    if (error) return setErrorText(error.message);
+    if (error) return setErrorText(error.message); //<--- replace with alert from toast
 
     setCurrentUser(user);
     navigate(`/users/${user.id}`);
@@ -30,31 +30,42 @@ export default function LoginPage() {
   return <div className="main_container">
     <section className="signup_section">
       <div className="signup_header">
-        {/* <h1 className=""></h1> */}
+        <h1 className="">LOGIN</h1>
       </div>
 
       <div>
         <form action="" className="signup_form" onSubmit={handleSubmit}>
-          <h1 className="" id="create-heading">Log back in</h1>
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            autoComplete="username"
-            name="username"
-            id="username"
-          />
+          <div className="create_heading_container">
+            <h1 className="" id="create-heading">Welcome Back</h1>
+            <p>Continue Creating</p>
+          </div>
+          <div className="signup_input_container">
+            <input
+              type="text"
+              autoComplete="username"
+              name="username"
+              id="username"
+              className="signup_input"
+              placeholder="Username"
+            />
+          </div>
 
-          <label htmlFor="password">Password</label>
-          <input
-            autoComplete="current-password"
-            type="password"
-            name="password"
-            id="password"
-          />
 
-          <div className="m">
-            <button className="button">
-              Login!
+          <div className="signup_input_container">
+            <input
+              autoComplete="current-password"
+              type="password"
+              name="password"
+              id="password"
+              className="signup_input"
+              placeholder="Password"
+            />
+          </div>
+
+
+          <div className="signup_button_container">
+            <button className="signup_button">
+              LOGIN
             </button>
           </div>
 

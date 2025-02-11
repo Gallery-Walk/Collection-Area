@@ -7,8 +7,9 @@ import WalkPage from './routes/Walk'
 import ProfilePage from './routes/Profile'
 import SearchResultPage from './routes/SearchGallery'
 import LoginPage from './routes/Login'
-import ProfileEditPage from './routes/ProfileEditPage'
+// import ProfileEditPage from './routes/ProfileEditPage'
 import NavBar from './components/NavBarComponent'
+import NotFoundPage from './routes/NotFountPage'
 
 export default function App() {
   return <>
@@ -21,7 +22,7 @@ export default function App() {
       <Route path="/gallery/search" element={<SearchResultPage />} />
       <Route path='/walk' element={<WalkPage />} />
       <Route path='/users/:id' element={<ProfilePage />} />
-      <Route path='/users/:id/edit' element={<ProfileEditPage />} />
+      <Route path='*' element={<NotFoundPage />} />
     </Routes>
   </>
 }

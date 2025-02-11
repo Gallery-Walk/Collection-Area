@@ -1,46 +1,32 @@
-import { useEffect, useState } from "react";
-import { fetchHandler, getPostOptions } from "../utils/fetchData";
-import { CLIENT_SECRET, CLIENT_ID, API_URL } from "../configs";
+
+import { ArrowDown } from "lucide-react"
 
 export default function HomePage() {
-  const [xappToken, setXappToken] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      const requestBody = {
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET
-      };
-
-      const [responseData, fetchError] = await fetchHandler<{ token: string }>(
-        API_URL,
-        getPostOptions(requestBody)
-      )
-
-      if (fetchError) {
-        setError(fetchError.message)
-        return;
-      }
-
-      if (responseData) {
-        setXappToken(responseData.token);
-      }
-
-    }
-    fetchToken();
-  }, [])
 
   return (
-    <div>
-      <h1>WE TESTING APIs HERE, "GALLERY"</h1>
-      {xappToken ? (
-        <p>Token: {xappToken}</p>
-      ) : error ? (
-        <p style={{ color: 'red' }}>Error: {error}</p>
-      ) : (
-        <p>Loading...</p>
-      )}
+    <div className="main_container">
+      <div className="home_container">
+        <section className="home1">
+          <div className="home_content_container">
+            <section className="home1_images_section">
+              <h1>images here</h1>
+            </section>
+            <section className="home1_content_section">
+              <h1>hello</h1>
+            </section>
+          </div>
+          <div className="home_arrow">
+            <ArrowDown />
+          </div>
+        </section>
+        <section className="home2">
+          <h1>hello2</h1>
+        </section>
+        <section className="home3">
+          <h1>hello3</h1>
+        </section>
+      </div>
     </div>
   )
 }
