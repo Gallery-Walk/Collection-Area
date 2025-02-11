@@ -113,17 +113,17 @@ export default function GalleryImages() {
 
 
   return (
-    <div>
-      <h1>ArtWork Display</h1>
+    <div className="gallery_display_container">
+      {/* <h1>ArtWork Display</h1> */}
       {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
       {/* Category Filter Dropdown */}
-      <div>
-        <label htmlFor="category-select">Filter by Category: </label>
+      <div className="select_container">
         <select
           id="category-select"
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
+          className="gallery_select"
         >
           <option value="">All Categories</option>
           {categories.map((category, idx) => (
@@ -135,31 +135,45 @@ export default function GalleryImages() {
       </div>
 
       {filteredArtWorks.length > 0 ? (
-        <div>
-          <ul>
-            {filteredArtWorks.map((artwork, idx) => (
-              <li key={idx}>
-                {/* <h3>{artwork.title}</h3>
-                <p>{artwork.date}</p> */}
-                {artwork._links.thumbnail?.href ? (
-                  <img
-                    src={artwork._links.thumbnail.href}
-                    alt={`Artwork titled ${artwork.title}`}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setExpandArt(artwork)}
-                  />
-                ) : (
-                  <p>No image available</p>
-                )}
-              </li>
-            ))}
+        <div className="card_container">
+          <ul className="card_list">
+            {filteredArtWorks.map((artwork, idx) => {
+
+              if (!artwork._links.thumbnail?.href) {
+                return null; // Skip rendering this artwork
+              }
+
+              return (
+                <li key={idx}>
+                  <div className="img_card">
+                    {artwork._links.thumbnail?.href ? (
+                      <img
+                        src={artwork._links.thumbnail.href}
+                        alt={`Artwork titled ${artwork.title}`}
+                        style={{ cursor: "pointer" }}
+                        onClick={() => setExpandArt(artwork)}
+                        className="artwork_img"
+                      />
+                    ) : (
+                      <div className="no_artworks_container">
+                        <p>No image available</p>
+                      </div>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
 
           <div ref={observerRef} style={{ height: "1px" }}></div>
         </div>
       ) : (
-        <p>No artworks available</p>
+        <div className="logo_container">
+          <p className="logo">GW</p>
+        </div>
       )}
+
+
       {expandArt && (
         <div className="artwork_modal_overlay" onClick={() => setExpandArt(null)}>
           <div className="artwork_modal_content" onClick={(e) => e.stopPropagation()}>

@@ -15,7 +15,7 @@ export default function WalkPage() {
       return;
     }
 
-    setPublishedImages(data);  // Show all published galleries with username
+    setPublishedImages(data);
   };
 
   useEffect(() => {
@@ -37,34 +37,47 @@ export default function WalkPage() {
 
   return (
     <div className="main_container">
-      <h1>HELLO THIS IS THE WALK PAGE</h1>
-      <section>
-        <ul>
-          {publishedImages.length > 0 ? (
-            publishedImages.map((gallery, idx) => (
-              <li key={idx}>
-                {/* Display each image */}
-                {gallery.imageUrl.map((url, imgIdx) => (
-                  <img key={imgIdx} src={url} alt={`moved-art-${imgIdx}`} />
-                ))}
-                {/* Display the username instead of userId */}
-                <p>Published by: {gallery.username}</p>
-              </li>
-            ))
-          ) : (
-            <p>No moved images found.</p>
+      <div className='walk_move_container'>
+        <section>
+          {publishedImages.some(img => img.userId === currentUser.id) && (
+            <button
+              onClick={handleGalleryDismiss}
+              className='move_button'
+            >
+              Move My Gallery Back
+            </button>
           )}
-        </ul>
-      </section>
+        </section>
+        <section className='walk_container'>
+          <ul className='walk_list'>
+            {publishedImages.length > 0 ? (
+              publishedImages.map((gallery, idx) => (
 
-      {/* Only delete current user's gallery */}
-      {publishedImages.some(img => img.userId === currentUser.id) && (
-        <button onClick={handleGalleryDismiss}>Move My Gallery Back</button>
-      )}
+                <li key={idx} className='walk_item'>
+                  <p className='walk_username'>{gallery.username}'s Gallery Walk</p>
+                  {gallery.imageUrl.map((url, imgIdx) => (
 
-      {/* <section>
-        <button onClick={() => navigate(`/users/${currentUser.id}`)}>Return to Profile</button>
-      </section> */}
+                    <img
+                      key={imgIdx}
+                      src={url}
+                      alt={`moved-art-${imgIdx}`}
+                      className='walk_artwork' />
+                  ))}
+                </li>
+
+
+              ))
+            ) : (
+              <div className='logo_container_walk'>
+                <p className='logo'>GW</p>
+                <p>No Collections Published</p>
+              </div>
+            )}
+          </ul>
+        </section>
+
+      </div>
+
     </div>
   );
 }

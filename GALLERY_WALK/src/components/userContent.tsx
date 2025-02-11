@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { basicFetchOptions, fetchHandler, deleteOptions, getPostOptions } from "../utils/fetchData";
 import { useNavigate } from "react-router-dom";
 
+
 export default function UserContent() {
   const { currentUser } = useContext(CurrentUserContext);
   const [likes, setLikes] = useState([]);
@@ -68,9 +69,15 @@ export default function UserContent() {
 
 
   return (
-    <div>
-      <section>
-        <ul>
+    <div className="userContent_container">
+      <h1>Your Walks</h1>
+      <section className="publish_container">
+        {likes.length > 0 && (
+          <button className="publish_button" onClick={handleMove}>Publish</button>
+        )}
+      </section>
+      <section className="card_container">
+        <ul className="card_list">
           {likes.length === 0 ? (
             <li>
               <p>Your Gallery does not exist yet.</p>
@@ -78,27 +85,30 @@ export default function UserContent() {
           ) : (
             likes.map((like, indx) => (
               <li key={indx}>
-                <img src={like} alt="liked-artwork" onClick={() => setExpandArt(like)} />
+                <div className="img_card">
+                  <img src={like}
+                    alt="liked-artwork"
+                    onClick={() => setExpandArt(like)}
+                    className="artwork_img"
+                  />
+                </div>
               </li>
             ))
           )}
-          {expandArt && (
-            <div className="artwork_modal_overlay" onClick={() => setExpandArt(null)}>
-              <div className="artwork_modal_content" onClick={(e) => e.stopPropagation}>
-                <div className="modal_img_container">
-                  <img src={expandArt} alt="" />
-                  <button onClick={() => handleDelete(expandArt)}>delete</button>
-                </div>
+
+        </ul>
+        {expandArt && (
+          <div className="artwork_modal_overlay" onClick={() => setExpandArt(null)}>
+            <div className="artwork_modal_content" onClick={(e) => e.stopPropagation}>
+              <div className="modal_img_container">
+                <img src={expandArt} alt="" />
+                <button onClick={() => handleDelete(expandArt)}>delete</button>
               </div>
             </div>
-          )}
-        </ul>
-      </section>
-      <section>
-        {likes.length > 0 && (
-          <button onClick={handleMove}>Publish!</button>
+          </div>
         )}
       </section>
+
 
     </div>
   );

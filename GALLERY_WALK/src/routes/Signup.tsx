@@ -16,7 +16,7 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrorText('')
-    if (!username || !password) return setErrorText('Missing username or password')
+    if (!username || !password) return setErrorText('Missing username or password')//<-- replace this with an alert with toast
 
     const [user, error] = await createUser({ username, password })
     if (error) {
@@ -41,34 +41,44 @@ export default function SignUpPage() {
   return <div className="main_container">
     <section className="signup_section">
       <div className="signup_header">
-        <h1 className="">Sign-up!</h1>
+        <h1 className="">SIGN UP</h1>
       </div>
 
       <div>
         <form action="" className="signup_form" onSubmit={handleSubmit} onChange={handleChange}>
-          <h1 className="" id="create-heading">Create New User</h1>
-          <label htmlFor="username">Username</label>
-          <input
-            type="text"
-            autoComplete="off"
-            name="username"
-            onChange={handleChange}
-            value={username}
-          />
+          <div className="create_heading_container">
+            <h1 className="" id="create-heading">Welcome, creator</h1>
+            <p>Create your story</p>
+          </div>
+          <div className="signup_input_container">
+            <input
+              type="text"
+              autoComplete="off"
+              name="username"
+              onChange={handleChange}
+              value={username}
+              className="signup_input"
+              placeholder="Username"
+            />
+          </div>
 
-          <label htmlFor="password">Password</label>
-          <input
-            autoComplete="off"
-            type="password"
-            name="password"
-            id="password"
-            onChange={handleChange}
-            value={password}
-          />
+          <div className="signup_input_container">
+            <input
+              autoComplete="off"
+              type="password"
+              name="password"
+              id="password"
+              onChange={handleChange}
+              value={password}
+              className="signup_input"
+              placeholder="Password"
+            />
+          </div>
 
-          <div className="m">
-            <button className="button">
-              Sign-up!
+
+          <div className="signup_button_container">
+            <button className="signup_button">
+              SIGN IN
             </button>
           </div>
 
