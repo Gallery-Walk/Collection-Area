@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useContext } from 'react';
 import { CurrentUserContext } from '../contexts/currentUser-context-provider';
 import { basicFetchOptions, fetchHandler } from '../utils/fetchData';
-
+import { motion, MotionConfig } from "framer-motion"
 export default function WalkPage() {
   const { currentUser } = useContext(CurrentUserContext);
   const navigate = useNavigate();
@@ -40,12 +40,21 @@ export default function WalkPage() {
       <div className='walk_move_container'>
         <section>
           {publishedImages.some(img => img.userId === currentUser.id) && (
-            <button
-              onClick={handleGalleryDismiss}
-              className='move_button'
+            <MotionConfig
+              transition={{
+                duration: "0.25",
+                ease: "easeInOut"
+              }}
             >
-              Move My Gallery Back
-            </button>
+              <motion.button
+                className="move_button"
+                onClick={handleGalleryDismiss}
+                whileHover={{ scale: 1.05, cursor: "pointer" }}
+                whileTap={{ scale: 0.95, rotate: '3deg' }}
+              >
+                Move My Gallery Back
+              </motion.button>
+            </MotionConfig>
           )}
         </section>
         <section className='walk_container'>

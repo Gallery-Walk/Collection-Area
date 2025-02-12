@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useContext } from "react";
 import { basicFetchOptions, fetchHandler, getPostOptions } from "../utils/fetchData";
 import { TOKEN } from "../configs";
 import { CurrentUserContext } from "../contexts/currentUser-context-provider";
+import { motion, MotionConfig } from "framer-motion"
 
 interface ArtWork {
   title: string;
@@ -119,19 +120,34 @@ export default function GalleryImages() {
 
       {/* Category Filter Dropdown */}
       <div className="select_container">
-        <select
-          id="category-select"
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="gallery_select"
+        <MotionConfig
+          transition={{
+            duration: "0.25",
+            ease: "linear"
+          }}
         >
-          <option value="">All Categories</option>
-          {categories.map((category, idx) => (
-            <option key={idx} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
+          <motion.select
+            id="category-select"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="gallery_select"
+            variants={{
+              hidden: { opacity: 0, y: 75 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 0.5, delay: 0.25 }}
+          >
+            <option value="">All Categories</option>
+            {categories.map((category, idx) => (
+              <option key={idx} value={category}>
+                {category}
+              </option>
+            ))}
+          </motion.select>
+        </MotionConfig>
+
       </div>
 
       {filteredArtWorks.length > 0 ? (
@@ -189,7 +205,22 @@ export default function GalleryImages() {
               <p className="artwork_modal_text">
                 {expandArt.date || "No date available."}
               </p>
-              <button className="" onClick={() => handleSaved(expandArt._links.thumbnail?.href ?? "")}>save</button>
+              <MotionConfig
+                transition={{
+                  duration: "0.25",
+                  ease: "linear"
+                }}
+              >
+                <motion.button
+                  className="publish_button"
+                  onClick={() => handleSaved(expandArt._links.thumbnail?.href ?? "")}
+                  whileHover={{ scale: 1.05, cursor: "pointer" }}
+                  whileTap={{ scale: 0.95, rotate: '3deg' }}
+                >
+                  save
+                </motion.button>
+              </MotionConfig>
+
             </div>
           </div>
         </div>

@@ -5,8 +5,9 @@ import { basicFetchOptions, fetchHandler } from "../utils/fetchData";
 import { CurrentUserContext } from "../contexts/currentUser-context-provider";
 import { getPostOptions } from "../utils/fetchData";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion"
+import { motion, MotionConfig } from "framer-motion"
 import { Search } from "lucide-react"
+import error from "../images/red"
 
 interface SearchResult {
   title: string;
@@ -125,17 +126,50 @@ export default function SearchResultPage() {
                 damping: 20,
               }}
             >
-              <input
-                type="text"
-                placeholder="Search by title or artist"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-              />
+              <MotionConfig
+                transition={{
+                  duration: "0.25",
+                  ease: "linear"
+                }}
+              >
+                <motion.input
+                  type="text"
+                  placeholder="Search by title or artist"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  variants={{
+                    hidden: { opacity: 0, y: 75 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.5, delay: 0.25 }}
+                />
+              </MotionConfig>
             </motion.div>
+            <MotionConfig
+              transition={{
+                duration: "0.25",
+                ease: "linear"
+              }}
+            >
+              <motion.button
+                type="submit"
+                className="search_button"
+                variants={{
+                  hidden: { opacity: 0, y: 75 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                initial="hidden"
+                animate="visible"
+                transition={{ duration: 0.5, delay: 0.25 }}
+              >
+                <Search className="icon" />
+              </motion.button>
+            </MotionConfig>
 
-            <button type="submit" className="search_button"><Search className="icon" /></button>
           </form>
         </section>
         <h1 className="search_result">Search Results for "{query}"</h1>
@@ -144,9 +178,9 @@ export default function SearchResultPage() {
           {results.length > 0 ? (
             <ul className="card_list">
               {results.map((result, idx) => {
-                if (result._links.thumbnail?.href === "art") {
-                  return null
-                }
+                // if (result._links.thumbnail?.href === "Could not find image") {
+                //   return null
+                // }
 
                 return (
                   <li key={idx}>
@@ -158,6 +192,12 @@ export default function SearchResultPage() {
                           style={{ cursor: "pointer" }}
                           onClick={() => setExpandArt(result)}
                           className="artwork_img"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement; // Cast to HTMLImageElement
+                            // console.log('Image failed to load:', target.src)
+                            target.onerror = null; // Prevent infinite loop if fallback fails
+                            target.src = "Collection-Area/GALLERY_WALK/src/images/error-icon-25266.png"; // Replace with your fallback image path
+                          }}
                         />
                       ) : (
                         <p>No image</p>
