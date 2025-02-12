@@ -2,6 +2,7 @@ import { CurrentUserContext } from "../contexts/currentUser-context-provider";
 import { useContext, useEffect, useState } from "react";
 import { basicFetchOptions, fetchHandler, deleteOptions, getPostOptions } from "../utils/fetchData";
 import { useNavigate } from "react-router-dom";
+import { motion, MotionConfig } from "framer-motion"
 
 
 export default function UserContent() {
@@ -70,17 +71,57 @@ export default function UserContent() {
 
   return (
     <div className="userContent_container">
-      <h1>Your Walks</h1>
+      <MotionConfig
+        transition={{
+          duration: "0.25",
+          ease: "easeInOut"
+        }}
+      >
+        <motion.h1
+          variants={{
+            hidden: { opacity: 0, y: 75 },
+            visible: { opacity: 1, y: 0 },
+          }}
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.5, delay: 0.25 }}
+        >
+          Your Walks
+        </motion.h1>
+      </MotionConfig>
+
       <section className="publish_container">
         {likes.length > 0 && (
-          <button className="publish_button" onClick={handleMove}>Publish</button>
+          <MotionConfig
+            transition={{
+              duration: "0.25",
+              ease: "linear"
+            }}
+          >
+            <motion.button
+              className="publish_button"
+              onClick={handleMove}
+              variants={{
+                hidden: { opacity: 0, y: 75 },
+                visible: { opacity: 1, y: 0 },
+              }}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.5, delay: 0.25 }}
+              whileHover={{ scale: 1.10, cursor: "pointer" }}
+              whileTap={{ scale: 0.95, rotate: '3deg' }}
+            >
+              Publish
+            </motion.button>
+          </MotionConfig>
+
         )}
       </section>
       <section className="card_container">
         <ul className="card_list">
           {likes.length === 0 ? (
             <li>
-              <p>Your Gallery does not exist yet.</p>
+              <p></p>
             </li>
           ) : (
             likes.map((like, indx) => (
@@ -101,8 +142,22 @@ export default function UserContent() {
           <div className="artwork_modal_overlay" onClick={() => setExpandArt(null)}>
             <div className="artwork_modal_content" onClick={(e) => e.stopPropagation}>
               <div className="modal_img_container">
-                <img src={expandArt} alt="" />
-                <button onClick={() => handleDelete(expandArt)}>delete</button>
+                <img src={expandArt} alt="" className="modal_artwork" />
+                <MotionConfig
+                  transition={{
+                    duration: "0.25",
+                    ease: "linear"
+                  }}
+                >
+                  <motion.button className="artwork_button"
+                    onClick={() => handleDelete(expandArt)}
+                    whileHover={{ scale: 1.05, cursor: "pointer" }}
+                    whileTap={{ scale: 0.95, rotate: '3deg' }}
+                  >
+                    delete
+                  </motion.button>
+                </MotionConfig>
+
               </div>
             </div>
           </div>

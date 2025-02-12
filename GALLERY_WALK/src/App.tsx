@@ -10,10 +10,12 @@ import LoginPage from './routes/Login'
 // import ProfileEditPage from './routes/ProfileEditPage'
 import NavBar from './components/NavBarComponent'
 import NotFoundPage from './routes/NotFountPage'
+import ScrollToTop from './components/ScrollToTop'
 
 export default function App() {
   return <>
     <NavBar />
+    <ScrollToTop />
     <Routes>
       <Route path='/' element={<HomePage />} />
       <Route path='/login' element={<LoginPage />} />

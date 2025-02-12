@@ -1,7 +1,7 @@
 import GalleryImages from "../components/GalleryImages";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion"
+import { motion, MotionConfig } from "framer-motion"
 import { Search } from "lucide-react"
 
 
@@ -37,17 +37,50 @@ export default function GalleryPage() {
                 damping: 20,
               }}
             >
-              <input
-                type="text"
-                placeholder="Search by title or artist"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-              />
+              <MotionConfig
+                transition={{
+                  duration: "0.25",
+                  ease: "linear"
+                }}
+              >
+                <motion.input
+                  type="text"
+                  placeholder="Search by title or artist"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  variants={{
+                    hidden: { opacity: 0, y: 75 },
+                    visible: { opacity: 1, y: 0 },
+                  }}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ duration: 0.5, delay: 0.25 }}
+                />
+              </MotionConfig>
             </motion.div>
+            <MotionConfig
+              transition={{
+                duration: "0.25",
+                ease: "linear"
+              }}
+            >
+              <motion.button
+                type="submit"
+                className="search_button"
+                variants={{
+                  hidden: { opacity: 0, y: 75 },
+                  visible: { opacity: 1, y: 0 },
+                }}
+                initial="hidden"
+                animate="visible"
+                transition={{ duration: 0.5, delay: 0.25 }}
+              >
+                <Search className="icon" />
+              </motion.button>
+            </MotionConfig>
 
-            <button type="submit" className="search_button"><Search className="icon" /></button>
           </form>
         </section>
         <GalleryImages />
