@@ -18,7 +18,7 @@ Combat the influx of AI art with traditional, classic art.
 
 - Node 0.10.x
 - Postgresql 9.1.x
-- React 17.x
+- React (TS) 17.x
 - Express.js 4.x
 
 ## Development
